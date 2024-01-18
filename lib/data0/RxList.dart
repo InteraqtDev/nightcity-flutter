@@ -23,9 +23,9 @@ class RxList<T> extends Computed<List<T>> implements Observable<List<T>, int, T>
   int atomIndexesDepCount = 0;
   List<List<ReactiveEffect>> effectFramesArray =[];
 
-  RxList(List<T>? source, Getter<List<T>>? getter, ApplyPatchType? applyPatch,
+  RxList(List<T>? source, [Getter<List<T>>? getter, ApplyPatchType? applyPatch,
       DirtyCallback? scheduleRecompute, Callbacks? callbacks,
-      SkipIndicator? skipIndicator, bool? forceAtom)
+      SkipIndicator? skipIndicator, bool? forceAtom])
       : super(getter, applyPatch, scheduleRecompute, callbacks, skipIndicator,
       forceAtom) {
     if (source != null) {
@@ -157,7 +157,7 @@ class RxList<T> extends Computed<List<T>> implements Observable<List<T>, int, T>
   //   });
   // }
 
-  RxList<U> map<U>(dynamic Function(T item, Atom<int>? index) mapFn, [bool? needIndex]) {
+  RxList<U> map<U>(dynamic Function(dynamic item, Atom<int>? index) mapFn, [bool? needIndex]) {
     final source = this;
     if (needIndex == true) {
       atomIndexesDepCount++;
