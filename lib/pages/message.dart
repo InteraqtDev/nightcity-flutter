@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
+import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -17,10 +18,12 @@ import 'package:uuid/uuid.dart';
 import 'package:flutter_openim_sdk/flutter_openim_sdk.dart' as OpenIM;
 
 class MessageScreen extends StatefulWidget {
-  const MessageScreen({super.key});
+  final String chatId;
+
+  const MessageScreen({super.key, required this.chatId});
 
   @override
-  State<MessageScreen> createState() => _MessageScreenState();
+  State<MessageScreen> createState() => _MessageScreenState(this.chatId);
 }
 
 class _MessageScreenState extends State<MessageScreen> {
@@ -29,6 +32,9 @@ class _MessageScreenState extends State<MessageScreen> {
     id: 'sf63ap7ljyul',
   );
   String? token;
+  final String chatId;
+  _MessageScreenState(this.chatId);
+
 
   Future initOpenIm()  async {
     final success = await OpenIM.OpenIM.iMManager.initSDK(
@@ -387,25 +393,53 @@ class _MessageScreenState extends State<MessageScreen> {
     // });
   }
 
+  onWillPop(canPop) {
+    context.go('/chat');
+    return false;
+  }
   @override
-  Widget build(BuildContext context) => Scaffold(
-    body: Chat(
-      messages: _messages,
-      onAttachmentPressed: _handleAttachmentPressed,
-      onMessageTap: _handleMessageTap,
-      onPreviewDataFetched: _handlePreviewDataFetched,
-      onSendPressed: _handleSendPressed,
-      showUserAvatars: true,
-      showUserNames: true,
-      user: _user,
-      theme: const DefaultChatTheme(
-        seenIcon: Text(
-          'read',
-          style: TextStyle(
-            fontSize: 10.0,
+  Widget build(BuildContext context) {
+    return PopScope(onPopInvoked: onWillPop, canPop: false, child: Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.black,
+        title: Text(chatId, style: TextStyle(color: Colors.white)),
+        // 点击返回按钮时返回到 /chat 页面
+        leading: IconButton(
+          color: Colors.white,
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            context.go('/chat');
+          },
+        ),
+      ),
+      body: Chat(
+        messages: _messages,
+        onAttachmentPressed: _handleAttachmentPressed,
+        onMessageTap: _handleMessageTap,
+        onPreviewDataFetched: _handlePreviewDataFetched,
+        onSendPressed: _handleSendPressed,
+        showUserAvatars: true,
+        showUserNames: true,
+        emptyState: const Center(
+          child: Text(
+            '快发送第一条消息吧',
+            style: TextStyle(
+              color: Colors.white60,
+              fontSize: 18,
+            ),
+          ),
+        ),
+        user: _user,
+        theme: const DefaultChatTheme(
+          backgroundColor: Colors.black,
+          seenIcon: Text(
+            'read',
+            style: TextStyle(
+              fontSize: 10.0,
+            ),
           ),
         ),
       ),
-    ),
-  );
+    ));
+  }
 }

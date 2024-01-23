@@ -107,6 +107,6 @@ var routes = [
   {
     'icon': Icons.message,
     'label': 'message',
-    'path': '/message'
+    'path': '/chat'
   }
 ];

@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:nightcity_flutter/pages/message.dart';
+import 'pages/chatHome.dart';
 import 'pages/connect.dart';
 import 'pages/login.dart';
 import 'pages/home.dart';
 import 'pages/cast.dart';
-import 'pages/message.dart';
+import 'pages/postDetail.dart';
 
 void main() {
   runApp(const MyApp());
@@ -15,7 +17,11 @@ final GoRouter _router = GoRouter(
     GoRoute(
       path: '/',
       // redirect 到 connect page
-      redirect: (_, __) {return '/login';} ,
+      redirect: (_, state) {
+        if (state.fullPath == '/') {
+          return '/home';
+        }
+      } ,
       builder: (BuildContext context, GoRouterState state) {
         return const HomeScreen();
       },
@@ -33,15 +39,33 @@ final GoRouter _router = GoRouter(
           },
         ),
         GoRoute(
+          path: 'home',
+          builder: (BuildContext context, GoRouterState state) {
+            return const HomeScreen();
+          },
+        ),
+        GoRoute(
+          path: 'postDetail/:postId',
+          builder: (BuildContext context, GoRouterState state) {
+            return PostDetailScreen(postId: state.pathParameters["postId"]!.toString(),);
+          },
+        ),
+        GoRoute(
           path: 'cast',
           builder: (BuildContext context, GoRouterState state) {
             return const CastScreen();
           },
         ),
         GoRoute(
-          path: 'message',
+          path: 'chat',
           builder: (BuildContext context, GoRouterState state) {
-            return const MessageScreen();
+            return const ChatScreen();
+          },
+        ),
+        GoRoute(
+          path: 'message/:chatId',
+          builder: (BuildContext context, GoRouterState state) {
+            return MessageScreen(chatId: state.pathParameters["chatId"]!);
           },
         ),
       ],
